@@ -53,9 +53,12 @@ li {
   align-items: flex-end;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 .bar {
   background-color: #E1E1E1;
-  border-radius: 4px;
 }
 
 .bar-positive {

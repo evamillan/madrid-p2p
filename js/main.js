@@ -56,7 +56,9 @@ const renderWidget = (data) => {
   const categories = data.categories.map(category => `
     <li>
       <div class="data-line">
-        <h2>${category.name}</h2>
+        <h2 data-neighbourhood="${category.name}" class="clickable">
+          ${category.name}
+        </h2>
         <span>${parseInt(category.value)}</span>
       </div>
       <div class="bar">
@@ -68,9 +70,33 @@ const renderWidget = (data) => {
 
   const content = `
     <h1>NEIGHBOURHOODS</h1>
-    <ul>${categories}</ul>`;
+    <ul class="neighbourhoods">${categories}</ul>`;
 
   document.querySelector('.widget').innerHTML = content;
+  
+  addListeners();
+};
+
+const addListeners = () => {
+  document.querySelector('.neighbourhoods').addEventListener('click', event => {
+    const clickedElement = event.target;
+
+    if (clickedElement.tagName === 'H2') {
+      const clickedNeighbourhood = clickedElement.dataset.neighbourhood;
+      toggleNeighbourhoodFilter(clickedNeighbourhood);
+    }
+  })
+};
+
+const toggleNeighbourhoodFilter = (neighbourhood) => {
+  const appliedFilters = listingsSource.getFilters();
+
+  if (appliedFilters.length) {
+    listingsSource.removeFilter(appliedFilters[0])
+  } else {
+    const clickedNeighbourhoodFilter = new carto.filter.Category('neighbourhood_group', { eq: neighbourhood });
+    listingsSource.addFilter(clickedNeighbourhoodFilter);
+  }
 };
 
 categoryDataview.on('dataChanged', renderWidget);
