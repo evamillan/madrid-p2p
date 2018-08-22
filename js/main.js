@@ -47,42 +47,42 @@ const listingsStyle = new carto.style.CartoCSS(`
 const listingsLayer = new carto.layer.Layer(listingsSource, listingsStyle);
 client.addLayer(listingsLayer);
 
-const categoryDataview = new carto.dataview.Category(listingsSource, 'neighbourhood_group');
-
-const boundingBoxFilter = new carto.filter.BoundingBoxGoogleMaps(map);
-categoryDataview.addFilter(boundingBoxFilter);
-
-const renderWidget = (data) => {
-  const categories = data.categories.map(category => `
+const renderWidget = (dataview, title, selector, isClickable = false) => {
+  const categories = dataview.categories.map(category => `
     <li>
       <div class="data-line">
-        <h2 data-neighbourhood="${category.name}" class="clickable">
+        <h2 ${isClickable ? `data-category="${category.name}" class="clickable"` : ''}>
           ${category.name}
         </h2>
         <span>${parseInt(category.value)}</span>
       </div>
       <div class="bar">
-        <div class="bar-positive" style="width:${parseInt(category.value / data.count * 100)}%">
+        <div class="bar-positive" style="width:${parseInt(category.value / dataview.count * 100)}%">
         </div>
       </div>
     </li>
     `).join('');
 
-  const content = `
-    <h1>NEIGHBOURHOODS</h1>
-    <ul class="neighbourhoods">${categories}</ul>`;
+    const content = `
+      <h1>${title}</h1>
+      <ul class="${title}">${categories}</ul>`;
 
-  document.querySelector('.widget').innerHTML = content;
-  
-  addListeners();
+    document.querySelector(`${selector}`).innerHTML = content;
+
+    if (isClickable) addListeners();
 };
+
+const neighbourhoodsDataview = new carto.dataview.Category(listingsSource, 'neighbourhood_group');
+
+const boundingBoxFilter = new carto.filter.BoundingBoxGoogleMaps(map);
+neighbourhoodsDataview.addFilter(boundingBoxFilter);
 
 const addListeners = () => {
   document.querySelector('.neighbourhoods').addEventListener('click', event => {
     const clickedElement = event.target;
 
     if (clickedElement.tagName === 'H2') {
-      const clickedNeighbourhood = clickedElement.dataset.neighbourhood;
+      const clickedNeighbourhood = clickedElement.dataset.category;
       toggleNeighbourhoodFilter(clickedNeighbourhood);
     }
   })
@@ -98,6 +98,18 @@ const toggleNeighbourhoodFilter = (neighbourhood) => {
     listingsSource.addFilter(clickedNeighbourhoodFilter);
   }
 };
+neighbourhoodsDataview.on('dataChanged', (data) => {
+  renderWidget(data, 'neighbourhoods', '.neighbourhoodswidget', true)
+});
+client.addDataview(neighbourhoodsDataview);
 
-categoryDataview.on('dataChanged', renderWidget);
-client.addDataview(categoryDataview);
+const hostsDataview = new carto.dataview.Category(listingsSource, 'host_name');
+
+const hostsBoundingBoxFilter = new carto.filter.BoundingBoxGoogleMaps(map);
+hostsDataview.addFilter(hostsBoundingBoxFilter);
+
+hostsDataview.on('dataChanged', (data) => {
+  renderWidget(data, 'hosts', '.hostswidget')
+});
+
+client.addDataview(hostsDataview);

@@ -8,16 +8,19 @@ body {
   font-family: 'Montserrat';
   font-size: 14px;
   color: #616161;
+  line-height: 22px;
 }
 
 h1 {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
-  line-height: 28px;
+  line-height: 24px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #E1E1E1;
 }
 
 h2 {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 400;
   text-transform: uppercase;
 }
@@ -36,7 +39,7 @@ li {
   height: 100%;
 }
 
-.widget {
+.widgets {
   position: absolute;
   top: 24px;
   right: 24px;
@@ -45,6 +48,10 @@ li {
   border-radius: 4px;
   background-color: #FFFFFF;
   box-shadow: 2px 2px 1px 0px rgba(97,97,97,1);
+}
+
+.hostswidget {
+  margin-top: 24px;
 }
 
 .data-line {
